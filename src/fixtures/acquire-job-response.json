@@ -1,0 +1,30 @@
+[
+  {
+    "id": "JOB-36ebec96-360d-11ee-8300-0242c0a8d006",
+    "url": "http://localhost:8090/external-job-api/jobs/JOB-36ebec96-360d-11ee-8300-0242c0a8d006",
+    "correlationId": "36ebec95-360d-11ee-8300-0242c0a8d006",
+    "processInstanceId": "PRC-36eb9f6c-360d-11ee-8300-0242c0a8d006",
+    "processDefinitionId": "PRC-externalWorkerProcess:6:36ba2f2a-360d-11ee-8300-0242c0a8d006",
+    "executionId": "PRC-36ebc67f-360d-11ee-8300-0242c0a8d006",
+    "scopeId": null,
+    "subScopeId": null,
+    "scopeDefinitionId": null,
+    "scopeType": null,
+    "elementId": "bpmnTask_3",
+    "elementName": "External Worker task",
+    "retries": 3,
+    "exceptionMessage": null,
+    "dueDate": null,
+    "createTime": "2023-08-08T17:01:27.897Z",
+    "tenantId": "",
+    "lockOwner": "test-worker",
+    "lockExpirationTime": "2023-08-08T17:01:38.028Z",
+    "variables": [
+      {
+        "name": "initiator",
+        "type": "string",
+        "value": "admin"
+      }
+    ]
+  }
+]

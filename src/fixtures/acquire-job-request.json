@@ -1,0 +1,8 @@
+{
+  "topic": "myTopic",
+  "lockDuration": "PT10S",
+  "numberOfTasks": 1,
+  "numberOfRetries": 5,
+  "workerId": "test-worker",
+  "scopeType": null
+}

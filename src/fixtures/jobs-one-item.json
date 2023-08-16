@@ -1,0 +1,30 @@
+{
+  "data": [
+    {
+      "id": "JOB-3728f5a5-360d-11ee-8300-0242c0a8d006",
+      "url": "http://localhost:8090/external-job-api/jobs/JOB-3728f5a5-360d-11ee-8300-0242c0a8d006",
+      "correlationId": "3728f5a4-360d-11ee-8300-0242c0a8d006",
+      "processInstanceId": "PRC-3728a77b-360d-11ee-8300-0242c0a8d006",
+      "processDefinitionId": "PRC-externalWorkerProcess:6:36ba2f2a-360d-11ee-8300-0242c0a8d006",
+      "executionId": "PRC-3728a77e-360d-11ee-8300-0242c0a8d006",
+      "scopeId": null,
+      "subScopeId": null,
+      "scopeDefinitionId": null,
+      "scopeType": null,
+      "elementId": "bpmnTask_3",
+      "elementName": "External Worker task",
+      "retries": 3,
+      "exceptionMessage": null,
+      "dueDate": null,
+      "createTime": "2023-08-08T17:01:28.297Z",
+      "tenantId": "",
+      "lockOwner": null,
+      "lockExpirationTime": null
+    }
+  ],
+  "total": 1,
+  "start": 0,
+  "sort": "id",
+  "order": "asc",
+  "size": 1
+}

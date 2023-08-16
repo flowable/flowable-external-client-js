@@ -1,0 +1,20 @@
+export type ExternalWorkerJobResponse = {
+    id: string;
+    url: string;
+    correlationId: string;
+    processInstanceId: string;
+    executionId: string;
+    scopeId: string;
+    subScopeId: string;
+    scopeDefinitionId: string;
+    scopeType: string;
+    elementId: string;
+    elementName: string;
+    retries: number;
+    exceptionMessage: string;
+    dueDate: Date;
+    createTime: Date;
+    tenantId: string;
+    lockOwner: string;
+    lockExpirationTime: Date;
+};

@@ -1,0 +1,11 @@
+{
+  "workerId": "test-worker",
+  "variables": [
+    {
+      "name": "testVar",
+      "type": "string",
+      "value": "test content",
+      "valueUrl": null
+    }
+  ]
+}
