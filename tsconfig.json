@@ -1,6 +1,14 @@
 {
   "compilerOptions": {
+    "declaration": true,
+    "declarationDir": "dist/",
     "esModuleInterop": true,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "lib": [
+      "dom",
+      "es5",
+      "scripthost",
+      "es2015.promise"
+    ]
   }
 }

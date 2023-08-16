@@ -1,4 +1,2 @@
-import {ExternalWorkerClient} from "./external-worker-client";
-import {FlowableExternalWorkerRestClient} from "./rest-client";
-
-export {ExternalWorkerClient, FlowableExternalWorkerRestClient};
+export * from "./external-worker-client";
+export {ExternalWorkerAcquireJobResponse} from "./external-worker-acquire-job-response";

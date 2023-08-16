@@ -1,13 +1,14 @@
 {
-  "name": "@flowable/external-worker-client",
-  "version": "0.0.1",
+  "name": "@flowable-oss/external-worker-client",
+  "version": "0.0.1-SNAPSHOT.3",
   "description": "Flowable External Worker JS Client",
-  "main": "index.js",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "author": "Flowable",
   "license": "Internal",
-  "type": "module",
+  "type": "commonjs",
   "scripts": {
-    "build": "rollup -c rollup.config.js",
+    "build": "rollup -c rollup.config.js --bundleConfigAsCjs",
     "test": "jest"
   },
   "jest": {
@@ -16,6 +17,11 @@
       "^.+\\.tsx?$": "ts-jest"
     }
   },
+  "files": [
+    "package.json",
+    "dist",
+    "README.md"
+  ],
   "devDependencies": {
     "@babel/core": "^7.22.10",
     "@babel/preset-typescript": "^7.22.5",

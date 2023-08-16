@@ -1,0 +1,12 @@
+{
+  "workerId": "test-worker",
+  "variables": [
+    {
+      "name": "testVar",
+      "type": "string",
+      "value": "test failure",
+      "valueUrl": null
+    }
+  ],
+  "errorCode": "errorCode1"
+}

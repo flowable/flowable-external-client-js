@@ -1,10 +1,12 @@
 import {describe, expect, it} from '@jest/globals';
 import {FlowableExternalWorkerRestClient} from './rest-client';
 import nock from "nock";
-import jobOneItem from "./fixtures/jobs-one-item.json";
+import jobsOneItem from "./fixtures/jobs-one-item.json";
 import acquireJobRequest from "./fixtures/acquire-job-request.json";
 import acquireJobResponse from "./fixtures/acquire-job-response.json";
 import completeJobRequest from "./fixtures/complete-job-request.json";
+import bpmnErrorJobRequest from "./fixtures/bpmn-error-job-request.json";
+import cmmnTerminateJobRequest from "./fixtures/cmmn-terminate-job-request.json";
 import {AxiosError} from "axios";
 import {EngineRestVariable} from "./engine-rest-variable";
 
@@ -27,7 +29,6 @@ describe('FlowableExternalWorkerRestClient', () => {
         }
     });
 
-
     it('with customizing axios', async () => {
         expect.assertions(3);
 
@@ -40,6 +41,27 @@ describe('FlowableExternalWorkerRestClient', () => {
                 expect(axios.post).toBeDefined();
             }
         });
+    });
+
+    it('with bearer token', async () => {
+        const customNockInstance = nock(flowableHost, {
+            reqheaders: {
+                authorization: 'Bearer myToken'
+            }
+        });
+        const scope = customNockInstance
+            .get('/external-job-api/jobs')
+            .reply(200, jobsOneItem);
+
+        const customRestClient = new FlowableExternalWorkerRestClient({
+            flowableHost,
+            workerId: workerId,
+            auth: {token: 'myToken'}
+        });
+
+        await customRestClient.listJobs();
+
+        scope.done();
     });
 
     describe('listJobs', () => {
@@ -64,7 +86,7 @@ describe('FlowableExternalWorkerRestClient', () => {
         it('returns the right amount of total jobs', async () => {
             const scope = nockInstance
                 .get('/external-job-api/jobs')
-                .reply(200, jobOneItem);
+                .reply(200, jobsOneItem);
 
             const jobResponse = await restClient.listJobs();
 
@@ -80,7 +102,7 @@ describe('FlowableExternalWorkerRestClient', () => {
         const jobId = 'JOB-3728f5a5-360d-11ee-8300-0242c0a8d006';
         const scope = nockInstance
             .get(`/external-job-api/jobs/${jobId}`)
-            .reply(200, jobOneItem.data[0]);
+            .reply(200, jobsOneItem.data[0]);
 
         let jobResponse = await restClient.getJob(jobId);
 
@@ -147,56 +169,204 @@ describe('FlowableExternalWorkerRestClient', () => {
                 }
             ]);
         });
+    });
 
-        describe('complete job', () => {
+    describe('complete job', () => {
 
-            it('with job id', async () => {
-                const jobId = 'JOB-0d5e6cce-368b-11ee-a638-0242c0a8f005';
-                const scope = nockInstance
-                    .post(
-                        `/external-job-api/acquire/jobs/${jobId}/complete`,
-                        completeJobRequest
-                    )
-                    .reply(204);
+        it('with job id', async () => {
+            const jobId = 'JOB-0d5e6cce-368b-11ee-a638-0242c0a8f005';
+            const scope = nockInstance
+                .post(
+                    `/external-job-api/acquire/jobs/${jobId}/complete`,
+                    completeJobRequest
+                )
+                .reply(204);
 
-                const variables: EngineRestVariable[] = [
+            const variables: EngineRestVariable[] = [
+                {
+                    name: 'testVar',
+                    type: 'string',
+                    value: 'test content',
+                    valueUrl: null
+                }
+            ];
+
+            await restClient.completeJob({jobId, variables});
+
+            scope.done();
+        });
+
+        it('with error 500', async () => {
+            expect.assertions(2);
+
+            const jobId = 'JOB-0d5e6cce-368b-11ee-a638-0242c0a8f005';
+            const scope = nockInstance
+                .post(
+                    `/external-job-api/acquire/jobs/${jobId}/complete`,
                     {
-                        name: 'testVar',
-                        type: 'string',
-                        value: 'test content',
-                        valueUrl: null
+                        workerId: 'test-worker',
+                        variables: null
                     }
-                ];
+                )
+                .reply(500);
 
-                await restClient.completeJob({jobId, variables});
+            await restClient.completeJob({jobId})
+                .catch((error: AxiosError) => {
+                    expect(error.code).toEqual('ERR_BAD_RESPONSE');
+                    expect(error.message).toEqual('Request failed with status code 500');
+                });
 
-                scope.done();
-            });
-
-            it('with error 500', async () => {
-                expect.assertions(2);
-
-                const jobId = 'JOB-0d5e6cce-368b-11ee-a638-0242c0a8f005';
-                const scope = nockInstance
-                    .post(
-                        `/external-job-api/acquire/jobs/${jobId}/complete`,
-                        {
-                            workerId: 'test-worker',
-                            variables: null
-                        }
-                    )
-                    .reply(500);
-
-                await restClient.completeJob({jobId})
-                    .catch((error: AxiosError) => {
-                        expect(error.code).toEqual('ERR_BAD_RESPONSE');
-                        expect(error.message).toEqual('Request failed with status code 500');
-                    });
-
-                scope.done();
-            });
-
+            scope.done();
         });
 
     });
+
+    describe('jobWithBpmnError', () => {
+
+        it('with error code', async () => {
+            const jobId = 'JOB-bc98ad95-369a-11ee-a638-0242c0a8f005';
+            const scope = nockInstance
+                .post(
+                    `/external-job-api/acquire/jobs/${jobId}/bpmnError`,
+                    bpmnErrorJobRequest
+                )
+
+                .reply(204);
+
+            const variables: EngineRestVariable[] = [
+                {
+                    name: 'testVar',
+                    type: 'string',
+                    value: 'test failure',
+                    valueUrl: null
+                }
+            ];
+
+            await restClient.jobWithBpmnError({
+                jobId,
+                variables,
+                errorCode: 'errorCode1',
+            });
+
+            scope.done();
+        })
+
+        it('without error code', async () => {
+            const jobId = 'JOB-bc98ad95-369a-11ee-a638-0242c0a8f005';
+            const scope = nockInstance
+                .post(
+                    `/external-job-api/acquire/jobs/${jobId}/bpmnError`,
+                    {
+                        workerId: "test-worker",
+                        variables: null,
+                        errorCode: null
+                    }
+                )
+
+                .reply(204);
+
+            await restClient.jobWithBpmnError({
+                jobId
+            });
+
+            scope.done();
+        });
+
+    });
+
+    describe('jobWithCmmnTerminate', () => {
+
+        it('with variables', async () => {
+            const jobId = 'JOB-bc98ad95-369a-11ee-a638-0242c0a8f005';
+            const scope = nockInstance
+                .post(
+                    `/external-job-api/acquire/jobs/${jobId}/cmmnTerminate`,
+                    cmmnTerminateJobRequest
+                )
+                .reply(204);
+
+            const variables: EngineRestVariable[] = [
+                {
+                    name: 'testVar',
+                    type: 'string',
+                    value: 'test terminate',
+                    valueUrl: null
+                }
+            ];
+
+            await restClient.jobWithCmmnTerminate({
+                jobId,
+                variables
+            });
+
+            scope.done();
+        })
+
+        it('without variables', async () => {
+            const jobId = 'JOB-bc98ad95-369a-11ee-a638-0242c0a8f005';
+            const scope = nockInstance
+                .post(
+                    `/external-job-api/acquire/jobs/${jobId}/cmmnTerminate`,
+                    {
+                        workerId: "test-worker",
+                        variables: null
+                    }
+                )
+
+                .reply(204);
+
+            await restClient.jobWithCmmnTerminate({
+                jobId
+            });
+
+            scope.done();
+        });
+    });
+
+
+    describe('failJob', () => {
+
+        it('without params', async () => {
+            const jobId = 'JOB-bc98ad95-369a-11ee-a638-0242c0a8f005';
+            const scope = nockInstance
+                .post(
+                    `/external-job-api/acquire/jobs/${jobId}/fail`,
+                    {
+                        workerId: "test-worker"
+                    }
+                )
+                .reply(204);
+
+            await restClient.failJob({jobId});
+
+            scope.done();
+        });
+
+        it('with error details', async () => {
+            const jobId = 'JOB-bc98ad95-369a-11ee-a638-0242c0a8f005';
+            const scope = nockInstance
+                .post(
+                    `/external-job-api/acquire/jobs/${jobId}/fail`,
+                    {
+                        workerId: "test-worker",
+                        errorMessage: "My error message",
+                        errorDetails: "Some really specific error details.",
+                        retries: 10,
+                        retryTimeout: "PT40"
+                    }
+                )
+                .reply(204);
+
+            await restClient.failJob({
+                jobId,
+                errorMessage: "My error message",
+                errorDetails: "Some really specific error details.",
+                retries: 10,
+                retryTimeout: "PT40"
+            });
+
+            scope.done();
+        });
+    });
+
 });
