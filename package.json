@@ -5,7 +5,7 @@
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "author": "Flowable",
-  "license": "Internal",
+  "license": "Apache-2.0",
   "type": "commonjs",
   "scripts": {
     "build": "rollup -c rollup.config.js --bundleConfigAsCjs",
