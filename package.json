@@ -1,6 +1,6 @@
 {
   "name": "@flowable-oss/external-worker-client",
-  "version": "0.0.1-SNAPSHOT.3",
+  "version": "1.0.0",
   "description": "Flowable External Worker JS Client",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
