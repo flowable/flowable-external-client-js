@@ -16,7 +16,7 @@ export class ExternalWorkerClient {
     constructor(params: ExternalWorkerClientParams) {
         const restClientParams = {
             ...params,
-            flowableHost: params.flowableHost || 'https://cloud.flowable.com/work/',
+            flowableHost: params.flowableHost || 'https://cloud.flowable.com/work',
             workerId: params.workerId || 'js-worker-' + Math.random().toString(26).slice(2)
         }
         this._restClient = new FlowableExternalWorkerRestClient(restClientParams);
