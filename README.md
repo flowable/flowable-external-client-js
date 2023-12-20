@@ -21,6 +21,14 @@ To use a personal access token you can specify the parameter `auth` and add `tok
 
 Alternatively, `customizeAxios` can be used to directly customize the REST client.
 
+## Installation
+
+To install the external worker library, execute the following command:
+
+```
+npm install @flowable-oss/external-worker-client
+```
+
 ## Sample
 
 ### Cloud
