@@ -43,15 +43,15 @@ export class ExternalWorkerClient {
             for (const job of jobs) {
                 const jobId = job.id;
                 try {
-                    const workResult = params.callbackHandler(job, new WorkerResultBuilder(job));
-                    if (!workResult) {
+                    const workResult = await Promise.resolve(params.callbackHandler(job, new WorkerResultBuilder(job)));
+                    if (!workResult || !workResult.execute) {
                         await this._restClient.completeJob({jobId});
                     } else {
                         await workResult.execute(this._restClient);
                     }
                 } catch (e) {
                     console.error('Failed to execute job with exception', e);
-                    await this._restClient.failJob({jobId, errorDetails: JSON.stringify(e)});
+                    await this._restClient.failJob({jobId, errorMessage: typeof e === 'string' ? e : JSON.stringify(e)});
                 }
             }
             if (timeoutInformation.unsubscribed) {
@@ -211,7 +211,7 @@ export type ExternalWorkerClientParams = {
 
 export type ExternalWorkerSubscriptionParams = {
     topic: string;
-    callbackHandler: (acquiredJob: ExternalWorkerAcquireJobResponse, workResultBuilder?: WorkerResultBuilder) => WorkResult | void,
+    callbackHandler: (acquiredJob: ExternalWorkerAcquireJobResponse, workResultBuilder: WorkerResultBuilder) => WorkResult | Promise<WorkResult> | void,
     lockDuration?: string;
     numberOfRetries?: number;
     numberOfTasks?: number;

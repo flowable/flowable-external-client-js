@@ -75,6 +75,50 @@ describe('ExternalWorkerClient', () => {
             expect(job).toBeDefined();
         });
 
+
+        it('and complete job with promise', async () => {
+            const scope = nockInstance
+              .post(`/external-job-api/acquire/jobs`, {
+                  topic: "myTopic",
+                  lockDuration: "PT1M",
+                  numberOfTasks: 1,
+                  numberOfRetries: 5,
+                  workerId: "test-worker",
+                  scopeType: null
+              })
+              .reply(200, acquireJobResponse)
+              .post(`/external-job-api/acquire/jobs`, {
+                  topic: "myTopic",
+                  lockDuration: "PT1M",
+                  numberOfTasks: 1,
+                  numberOfRetries: 5,
+                  workerId: "test-worker",
+                  scopeType: null
+              })
+              .reply(200, [])
+              .post(`/external-job-api/acquire/jobs/${acquireJobResponse[0].id}/complete`, {
+                  variables: null,
+                  workerId: "test-worker"
+              })
+              .reply(204);
+
+            let job: ExternalWorkerAcquireJobResponse = undefined;
+            const subscription = externalWorkerClient.subscribe({
+                topic: 'myTopic',
+                callbackHandler(acquiredJob: ExternalWorkerAcquireJobResponse, workResultBuilder: WorkerResultBuilder) {
+                    job = acquiredJob;
+                    return Promise.resolve(workResultBuilder.success());
+                },
+                waitPeriodSeconds: 0.2
+            });
+            const done = await waitForRequestsToComplete(scope);
+            expect(done).toBeTruthy();
+
+            subscription.unsubscribe();
+            scope.done();
+            expect(job).toBeDefined();
+        });
+
         it('and complete job with variables', async () => {
             const scope = nockInstance
                 .post(`/external-job-api/acquire/jobs`, {
@@ -149,6 +193,50 @@ describe('ExternalWorkerClient', () => {
                 callbackHandler(acquiredJob: ExternalWorkerAcquireJobResponse, workResultBuilder: WorkerResultBuilder) {
                     job = acquiredJob;
                     return workResultBuilder.failure().errorMessage("Some error message");
+                },
+                waitPeriodSeconds: 0.2
+            });
+
+            const done = await waitForRequestsToComplete(scope);
+            expect(done).toBeTruthy();
+
+            subscription.unsubscribe();
+            scope.done();
+            expect(job).toBeDefined();
+        });
+
+        it('and fail job with promise', async () => {
+            const scope = nockInstance
+                .post(`/external-job-api/acquire/jobs`, {
+                    topic: "myTopic",
+                    lockDuration: "PT1M",
+                    numberOfTasks: 1,
+                    numberOfRetries: 5,
+                    workerId: "test-worker",
+                    scopeType: null
+                })
+                .reply(200, acquireJobResponse)
+                .post(`/external-job-api/acquire/jobs`, {
+                    topic: "myTopic",
+                    lockDuration: "PT1M",
+                    numberOfTasks: 1,
+                    numberOfRetries: 5,
+                    workerId: "test-worker",
+                    scopeType: null
+                })
+                .reply(200, [])
+                .post(`/external-job-api/acquire/jobs/${acquireJobResponse[0].id}/fail`, {
+                    workerId: "test-worker",
+                    errorMessage: "Some error message"
+                })
+                .reply(204);
+
+            let job: ExternalWorkerAcquireJobResponse = undefined;
+            const subscription = externalWorkerClient.subscribe({
+                topic: 'myTopic',
+                callbackHandler(acquiredJob: ExternalWorkerAcquireJobResponse, workResultBuilder: WorkerResultBuilder) {
+                    job = acquiredJob;
+                    return Promise.reject("Some error message");
                 },
                 waitPeriodSeconds: 0.2
             });
