@@ -31,9 +31,9 @@ npm install @flowable-oss/external-worker-client
 
 ## Sample
 
-### Cloud
+### Flowable Trial
 
-The usage with Flowable Cloud is simpler, since everything is pre-configured.
+The usage with Flowable Trial is simpler, since everything is pre-configured.
 However, it's required to either use the user credentials or to pre-configure a personal access token.
 
 ```javascript
