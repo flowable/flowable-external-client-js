@@ -52,7 +52,7 @@ export class ExternalWorkerClient {
                     }
                 } catch (e) {
                     console.error('Failed to execute job with exception', e);
-                    await this._restClient.failJob({jobId, errorMessage: typeof e === 'string' ? e : JSON.stringify(e)});
+                    await this._restClient.failJob({jobId, errorMessage: typeof e === 'string' ? e : this.stringify(e)});
                 }
             }
             if (timeoutInformation.unsubscribed) {
@@ -60,6 +60,23 @@ export class ExternalWorkerClient {
             }
         } while (jobs.length > 0);
         timeoutInformation.timeout = setTimeout(() => this.consume(params, timeoutInformation), timeoutInformation.waitMs);
+    }
+
+    private stringify(obj) {
+        let cache = [];
+        let str = JSON.stringify(obj, function (key, value) {
+            if (typeof value === "object" && value !== null) {
+                if (cache.indexOf(value) !== -1) {
+                    // Circular reference found, discard key
+                    return;
+                }
+                // Store value in our collection
+                cache.push(value);
+            }
+            return value;
+        });
+        cache = null; // reset the cache
+        return str;
     }
 }
 
