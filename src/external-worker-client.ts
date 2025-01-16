@@ -8,6 +8,7 @@ import {
     FlowableExternalWorkerRestClient
 } from "./rest-client";
 import {ExternalWorkerAcquireJobResponse} from "./external-worker-acquire-job-response";
+import { EngineRestVariableType } from "./engine-rest-variable";
 
 export class ExternalWorkerClient {
 
@@ -112,7 +113,7 @@ export class WorkerResultSuccess implements WorkResult {
         this.completeJobParams = {jobId: job.id, variables: null};
     }
 
-    public variable(name: string, value: string, type: string): WorkerResultSuccess {
+    public variable(name: string, value: any, type: EngineRestVariableType | string): WorkerResultSuccess {
         this.completeJobParams.variables = this.completeJobParams.variables || [];
         this.completeJobParams.variables.push({name, value, type, valueUrl: null});
         return this;
@@ -164,7 +165,7 @@ export class WorkerResultBpmnError implements WorkResult {
         this.bpmnErrorParams = {jobId: job.id};
     }
 
-    public variable(name: string, value: string, type: string): WorkerResultBpmnError {
+    public variable(name: string, value: any, type: EngineRestVariableType | string): WorkerResultBpmnError {
         this.bpmnErrorParams.variables = this.bpmnErrorParams.variables || [];
         this.bpmnErrorParams.variables.push({name, value, type, valueUrl: null});
         return this;
@@ -187,7 +188,7 @@ export class WorkerResultCmmnTerminate implements WorkResult {
         this.cmmnTerminateParams = {jobId: job.id};
     }
 
-    public variable(name: string, value: string, type: string): WorkerResultCmmnTerminate {
+    public variable(name: string, value: any, type: EngineRestVariableType | string): WorkerResultCmmnTerminate {
         this.cmmnTerminateParams.variables = this.cmmnTerminateParams.variables || [];
         this.cmmnTerminateParams.variables.push({name, value, type, valueUrl: null});
         return this;

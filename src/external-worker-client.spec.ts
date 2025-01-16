@@ -148,7 +148,8 @@ describe('ExternalWorkerClient', () => {
                 callbackHandler(acquiredJob: ExternalWorkerAcquireJobResponse, workResultBuilder: WorkerResultBuilder) {
                     job = acquiredJob;
                     return workResultBuilder.success()
-                        .variable('testVar', 'test content', 'string');
+                        .variable('testVar', 'test content', 'string')
+                        .variable('testVar2', 12, 'integer');
                 },
                 waitPeriodSeconds: 0.2
             });
