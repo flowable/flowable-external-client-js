@@ -188,6 +188,12 @@ describe('FlowableExternalWorkerRestClient', () => {
                     type: 'string',
                     value: 'test content',
                     valueUrl: null
+                },
+                {
+                    name: 'testVar2',
+                    type: 'integer',
+                    value: 12,
+                    valueUrl: null
                 }
             ];
 
