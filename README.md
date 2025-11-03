@@ -1,7 +1,7 @@
 # Flowable External Worker Library for Javascript
 
-[License:
-![license](https://img.shields.io/hexpm/l/plug.svg)](https://github.com/flowable/flowable-external-client-js/blob/main/LICENSE)
+[![Latest Version](https://img.shields.io/npm/v/@flowable-oss/external-worker-client.svg)](https://www.npmjs.com/package/@flowable-oss/external-worker-client)
+[![license](https://img.shields.io/hexpm/l/plug.svg)](https://github.com/flowable/flowable-external-client-js/blob/main/LICENSE)
 
 ![Flowable Actions CI](https://github.com/flowable/flowable-external-client-js/actions/workflows/main.yml/badge.svg?branch=main)
 
